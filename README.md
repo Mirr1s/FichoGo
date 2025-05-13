@@ -2,13 +2,13 @@
 Aplicación móvil para mejorar el acceso a comedores universitarios mediante un ficho digital integrado con el carnet estudiantil. Reduce filas, optimiza la gestión del servicio y garantiza un control eficiente, mejorando la experiencia de los estudiantes.
 
 
-# 📊 Diagramas UML del Proyecto *Lechuga*
+# Diagramas UML del Proyecto *FichoGO*
 
-A continuación se presentan los diagramas UML desarrollados para comprender y modelar la lógica del sistema **Lechuga**, una aplicación que permite a los estudiantes solicitar fichos digitales para acceder al comedor universitario. Estos diagramas ayudan a representar de forma clara y estructurada cómo interactúan los actores, cuáles son las clases principales del sistema, los flujos de acciones, y la lógica detrás de los procesos.
+A continuación se presentan los diagramas UML desarrollados para comprender y modelar la lógica del sistema **FichoGO**, una aplicación que permite a los estudiantes solicitar fichos digitales para acceder al comedor universitario. Estos diagramas ayudan a representar de forma clara y estructurada cómo interactúan los actores, cuáles son las clases principales del sistema, los flujos de acciones, y la lógica detrás de los procesos.
 
 ---
 
-## 1. 🧑‍💼 Diagrama de Casos de Uso
+## 1.  Diagrama de Casos de Uso
 
 Este diagrama muestra los **actores** que interactúan con el sistema y los **casos de uso** principales que pueden realizar.
 
@@ -19,11 +19,11 @@ Este diagrama muestra los **actores** que interactúan con el sistema y los **ca
 
 **Propósito:** Identificar y organizar las funcionalidades del sistema desde el punto de vista del usuario final.
 
-![Diagrama de Casos de Uso](ruta_a_imagen_casos_de_uso)
+![Diagrama de Casos de Uso](https://github.com/Mirr1s/FichoGo/blob/main/Diagramas%20UML/Diagrama%20de%20Casos%20de%20Uso.png)
 
 ---
 
-## 2. 🔄 Diagrama de Actividad – Flujo de solicitud del ficho
+## 2.  Diagrama de Actividad – Flujo de solicitud del ficho
 
 Este diagrama muestra paso a paso cómo un estudiante solicita un ficho desde que abre la aplicación hasta que recibe la confirmación, o se le informa que no hay cupos disponibles.
 
@@ -39,7 +39,7 @@ Este diagrama muestra paso a paso cómo un estudiante solicita un ficho desde qu
 
 ---
 
-## 3. 🧱 Diagrama de Clases
+## 3.  Diagrama de Clases
 
 El diagrama de clases presenta las **entidades principales** del sistema, sus atributos, métodos y las relaciones entre ellas.
 
@@ -51,11 +51,11 @@ El diagrama de clases presenta las **entidades principales** del sistema, sus at
 
 **Propósito:** Modelar la estructura estática del sistema en términos de objetos y relaciones.
 
-![Diagrama de Clases](ruta_a_imagen_clases)
+![Diagrama de Clases](https://github.com/Mirr1s/FichoGo/blob/main/Diagramas%20UML/Diagrama%20de%20Clases.png)
 
 ---
 
-## 4. ⏱️ Diagrama de Secuencia – Solicitud de ficho
+## 4.  Diagrama de Secuencia – Solicitud de ficho
 
 Este diagrama representa cómo fluye la información entre los diferentes componentes cuando un estudiante solicita un ficho.
 
@@ -67,4 +67,4 @@ Este diagrama representa cómo fluye la información entre los diferentes compon
 
 **Propósito:** Entender la **interacción temporal** entre los actores y el sistema, paso a paso.
 
-![Diagrama de Secuencia](ruta_a_imagen_secuencia)
+![Diagrama de Secuencia](https://github.com/Mirr1s/FichoGo/blob/main/Diagramas%20UML/Diagrama%20de%20Secuencia-Solicitar%20ficho%20digital.png)
