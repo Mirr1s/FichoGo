@@ -35,7 +35,7 @@ Este diagrama muestra paso a paso cómo un estudiante solicita un ficho desde qu
 
 **Propósito:** Representar gráficamente el flujo de trabajo lógico de la funcionalidad más importante de la app.
 
-![Diagrama de Actividad](ruta_a_imagen_actividad)
+![Diagrama de Actividad](https://github.com/Mirr1s/FichoGo/blob/main/Diagramas%20UML/Diagrama%20de%20Actividad.png)
 
 ---
 
