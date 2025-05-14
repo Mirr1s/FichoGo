@@ -68,3 +68,30 @@ Este diagrama representa cómo fluye la información entre los diferentes compon
 **Propósito:** Entender la **interacción temporal** entre los actores y el sistema, paso a paso.
 
 ![Diagrama de Secuencia](https://github.com/Mirr1s/FichoGo/blob/main/Diagramas%20UML/Diagrama%20de%20Secuencia-Solicitar%20ficho%20digital.png)
+
+## Arquitectura del Sistema
+
+### Elección de Arquitectura: Monolítica
+
+Para el desarrollo de FichoGo se ha optado por una **arquitectura monolítica**, debido a las siguientes razones:
+
+### Simplicidad en el desarrollo
+
+Al tratarse de un proyecto académico con un alcance controlado, una arquitectura monolítica permite centralizar toda la lógica de negocio, la interfaz de usuario y el acceso a datos en una única base de código. Esto facilita la implementación y comprensión del sistema por parte del equipo de desarrollo.
+
+### Facilidad de despliegue
+
+El despliegue de una aplicación monolítica es más directo, ya que se empaqueta y distribuye como una única unidad ejecutable. Esto reduce la complejidad asociada a la configuración de múltiples servicios o contenedores.
+
+### Mantenimiento eficiente durante etapas tempranas
+
+En las primeras fases del proyecto, donde los requerimientos están en evolución, mantener el sistema en un solo bloque permite hacer cambios rápidamente sin necesidad de coordinar múltiples servicios.
+
+### Adecuado para proyectos de tamaño pequeño a mediano
+
+Dado que FichoGo es un sistema con funcionalidades bien definidas y una base de usuarios delimitada (estudiantes y personal administrativo de comedores universitarios), una arquitectura monolítica es suficiente para satisfacer sus necesidades técnicas sin sobrecargar el diseño con componentes innecesarios.
+
+### Consideraciones futuras
+
+Aunque se ha optado por una arquitectura monolítica en esta fase inicial, se dejará documentado el diseño del sistema de forma modular, de manera que sea posible migrar a una arquitectura basada en microservicios en el futuro si el proyecto escala y requiere mayor flexibilidad, mantenibilidad o despliegue independiente de componentes.
+
