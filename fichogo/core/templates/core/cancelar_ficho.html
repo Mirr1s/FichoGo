@@ -1,0 +1,13 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h2>Cancelar Ficho</h2>
+<p>¿Estás seguro que deseas cancelar tu ficho?</p>
+<p><strong>Servicio:</strong> {{ ficho.cupo.nombre_servicio }}</p>
+<p><strong>Fecha:</strong> {{ ficho.cupo.fecha|date:'d \d\e F \d\e Y' }}</p>
+<p><strong>Hora de asistencia:</strong> {{ ficho.hora }}</p>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Cancelar ficho</button>
+  <a href="{% url 'usuario' %}" class="btn btn-secondary">Volver</a>
+</form>
+{% endblock %}

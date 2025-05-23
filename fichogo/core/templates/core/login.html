@@ -1,0 +1,15 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h2>Iniciar sesión</h2>
+<form method="post">
+    {% csrf_token %}
+    <label for="username">Código de estudiante:</label>
+    <input type="text" name="username" id="username" required>
+    <label for="password">Contraseña:</label>
+    <input type="password" name="password" id="password" required>
+    <button type="submit">Entrar</button>
+</form>
+{% if form.errors %}
+    <p style="color:red;">Usuario o contraseña incorrectos.</p>
+{% endif %}
+{% endblock %}

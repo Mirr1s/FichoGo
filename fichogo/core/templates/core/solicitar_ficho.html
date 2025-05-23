@@ -1,0 +1,37 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h2>Solicitar Ficho</h2>
+{% if mensaje_bloqueo %}
+    <div style="color:red; font-weight:bold;">{{ mensaje_bloqueo }}</div>
+    {% if ficho_existente %}
+        <hr>
+        <h2>Ficho generado exitosamente</h2>
+        <p><strong>Servicio:</strong> {{ ficho_existente.cupo.nombre_servicio }}</p>
+        <p><strong>Fecha:</strong> {{ ficho_existente.cupo.fecha|date:'d \d\e F \d\e Y' }}</p>
+        <p><strong>Hora de asistencia:</strong> {{ ficho_existente.hora }}</p>
+        <p><strong>Estado:</strong> {{ ficho_existente.estado }}</p>
+        <p><strong>Código QR:</strong></p>
+        <img src="/{{ ficho_existente.codigo_qr }}" alt="Código QR del ficho" style="width:200px;">        <p><strong>Número de personas por delante de ti:</strong> {{ fichos_adelante }}</p>
+    {% endif %}
+{% else %}
+<form method="post">
+    {% csrf_token %}
+    <label for="cupo_id">Servicio:</label>
+    <select name="cupo_id" id="cupo_id" required>
+        {% for servicio in servicios %}
+            <option value="{{ servicio.id }}">{{ servicio.nombre_servicio }} (Disponibles: {{ servicio.cantidad_disponible }})</option>
+        {% endfor %}
+    </select>
+    <label for="hora">Hora de asistencia:</label>
+    <input type="time" name="hora" id="hora" min="11:30" max="13:30" step="900" required>
+    <button type="submit">Solicitar</button>
+</form>
+{% endif %}
+{% if messages %}
+    <ul>
+    {% for message in messages %}
+        <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+{% endif %}
+{% endblock %}

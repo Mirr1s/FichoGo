@@ -1,0 +1,14 @@
+<!-- Plantilla base para la app core -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Core</title>
+</head>
+<body>
+    <nav style="margin-bottom: 20px;">
+      <a href="{% url 'usuario' %}" class="btn btn-link">Volver a inicio</a>
+    </nav>
+    {% block content %}{% endblock %}
+</body>
+</html>

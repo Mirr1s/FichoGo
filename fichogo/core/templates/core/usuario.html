@@ -1,0 +1,21 @@
+{% extends 'core/base.html' %}
+{% block content %}
+  <h2>Bienvenido, {{ user.get_full_name|default:user.username }}!</h2>
+  <p>Has iniciado sesión correctamente.</p>
+  <a href="{% url 'solicitar_ficho' %}" class="btn btn-primary">Solicitar Ficho</a>
+  {% if ficho_existente %}
+    <div class="alert alert-info mt-3">
+      <p><strong>Ficho activo para hoy:</strong></p>
+      <p>Servicio: {{ ficho_existente.cupo.nombre_servicio }}</p>
+      <p>Hora: {{ ficho_existente.hora }}</p>
+      <p>Estado: {{ ficho_existente.estado }}</p>
+      <form action="{% url 'cancelar_ficho' ficho_existente.id %}" method="get">
+        <button type="submit" class="btn btn-danger">Cancelar ficho</button>
+      </form>
+    </div>
+  {% endif %}
+  <form action="{% url 'logout' %}" method="post" style="display:inline; margin-left:10px;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-secondary">Cerrar Sesión</button>
+  </form>
+{% endblock %}
