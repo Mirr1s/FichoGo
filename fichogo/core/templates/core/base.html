@@ -9,6 +9,13 @@
     <nav style="margin-bottom: 20px;">
       <a href="{% url 'usuario' %}" class="btn btn-link">Volver a inicio</a>
     </nav>
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="alert alert-{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
     {% block content %}{% endblock %}
 </body>
 </html>

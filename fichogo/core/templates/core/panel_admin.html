@@ -1,6 +1,17 @@
 {% extends 'core/base.html' %}
 {% block content %}
 <h2>Panel Administrativo</h2>
+<h3>Agregar nuevo cupo</h3>
+<form method="post" action="{% url 'panel_admin' %}" class="mb-4">
+  {% csrf_token %}
+  <label for="nombre_servicio">Servicio:</label>
+  <input type="text" name="nombre_servicio" id="nombre_servicio" required>
+  <label for="fecha">Fecha:</label>
+  <input type="date" name="fecha" id="fecha" required>
+  <label for="cantidad_total">Cantidad total:</label>
+  <input type="number" name="cantidad_total" id="cantidad_total" min="1" required>
+  <button type="submit" class="btn btn-success">Agregar cupo</button>
+</form>
 <h3>Estadísticas</h3>
 <ul>
   <li>Total de fichos: {{ total_fichos }}</li>

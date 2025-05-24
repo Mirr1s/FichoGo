@@ -1,0 +1,20 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h2>Mi Ficho Activo</h2>
+{% if ficho %}
+  <p><strong>Servicio:</strong> {{ ficho.cupo.nombre_servicio }}</p>
+  <p><strong>Fecha:</strong> {{ ficho.cupo.fecha|date:'d \d\e F \d\e Y' }}</p>
+  <p><strong>Hora de asistencia:</strong> {{ ficho.hora }}</p>
+  <p><strong>Estado:</strong> {{ ficho.estado }}</p>
+  <p><strong>N° de ficho:</strong> {{ numero_ficho }}</p>
+  <p><strong>Código QR:</strong></p>
+  {% if ficho.codigo_qr %}
+    <img src="{{ ficho.codigo_qr.url|default:ficho.codigo_qr }}" alt="Código QR del ficho" style="width:200px;">
+  {% else %}
+    <span>No disponible</span>
+  {% endif %}
+{% else %}
+  <div class="alert alert-warning">No tienes un ficho activo para hoy.</div>
+{% endif %}
+<a href="{% url 'usuario' %}" class="btn btn-secondary mt-3">Volver a inicio</a>
+{% endblock %}

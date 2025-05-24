@@ -18,6 +18,7 @@ class Ficho(models.Model):
     hora = models.TimeField()
     codigo_qr = models.CharField(max_length=255, blank=True, null=True)
     estado = models.CharField(max_length=20, choices=[('activo', 'Activo'), ('usado', 'Usado'), ('cancelado', 'Cancelado')], default='activo')
+    hora_validacion = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return f"Ficho de {self.usuario.username} para {self.cupo.nombre_servicio} ({self.fecha_solicitud.date()})"

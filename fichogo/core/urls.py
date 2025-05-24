@@ -12,4 +12,6 @@ urlpatterns = [
     path('validar-ficho/<int:ficho_id>/', views.validar_ficho, name='validar_ficho'),
     path('cancelar-ficho/<int:ficho_id>/', views.cancelar_ficho, name='cancelar_ficho'),
     path('panel-admin/', views.panel_admin, name='panel_admin'),
+    path('validar-ficho-admin/', views.validar_ficho_admin, name='validar_ficho_admin'),
+    path('ver-ficho/', views.ver_ficho, name='ver_ficho'),
 ]
