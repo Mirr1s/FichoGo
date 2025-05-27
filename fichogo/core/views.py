@@ -65,6 +65,13 @@ def solicitar_ficho(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
+    # Definir los horarios por servicio
+    horarios_servicio = {
+        'desayuno': {'inicio': '06:45', 'fin': '08:30'},
+        'almuerzo': {'inicio': '11:30', 'fin': '13:30'},
+        'cena': {'inicio': '17:30', 'fin': '19:30'},
+    }
+
     # Verifica si ya tiene un ficho activo para el mismo día
     ficho_existente = Ficho.objects.filter(
         usuario=request.user,
@@ -109,7 +116,7 @@ def solicitar_ficho(request):
             puede_pedir = False
             mensaje_bloqueo = "Ya has validado tu ficho para hoy. Solo podrás pedir otro ficho mañana."
     if not puede_pedir:
-        return render(request, 'core/solicitar_ficho.html', {'servicios': servicios, 'mensaje_bloqueo': mensaje_bloqueo, 'ficho_existente': ficho_existente, 'fichos_adelante': fichos_adelante})
+        return render(request, 'core/solicitar_ficho.html', {'servicios': servicios, 'mensaje_bloqueo': mensaje_bloqueo, 'ficho_existente': ficho_existente, 'fichos_adelante': fichos_adelante, 'horarios_servicio': horarios_servicio})
     if request.method == 'POST':
         cupo_id = request.POST.get('cupo_id')
         hora = request.POST.get('hora')
@@ -118,11 +125,13 @@ def solicitar_ficho(request):
         except Cupo.DoesNotExist:
             messages.error(request, 'No hay cupos disponibles para este servicio.')
             return redirect('solicitar_ficho')
-        # Validar horario para comedores
-        if cupo.nombre_servicio.lower() == 'comedores':
-            if not (hora >= '11:30' and hora <= '13:30'):
-                messages.error(request, 'El comedor solo está disponible de 11:30 a 13:30.')
-                return redirect('solicitar_ficho')
+        # Validar horario según el servicio
+        servicio = cupo.nombre_servicio
+        hora_inicio = horarios_servicio[servicio]['inicio']
+        hora_fin = horarios_servicio[servicio]['fin']
+        if not (hora >= hora_inicio and hora <= hora_fin):
+            messages.error(request, f'El servicio {servicio} solo está disponible de {hora_inicio} a {hora_fin}.')
+            return redirect('solicitar_ficho')
         # Calcular posición en la fila
         fichos_anteriores = Ficho.objects.filter(cupo=cupo, fecha_creacion__lt=timezone.now()).count()
         # Crear el ficho
@@ -145,7 +154,7 @@ def solicitar_ficho(request):
         qr_url = os.path.join(settings.MEDIA_URL, qr_path).replace('\\', '/')
         messages.success(request, 'Ficho generado exitosamente.')
         return redirect('usuario')
-    return render(request, 'core/solicitar_ficho.html', {'servicios': servicios})
+    return render(request, 'core/solicitar_ficho.html', {'servicios': servicios, 'horarios_servicio': horarios_servicio})
 
 @login_required
 def validar_ficho(request, ficho_id):
@@ -181,9 +190,12 @@ def cancelar_ficho(request, ficho_id):
         return redirect('usuario')
 
 @login_required
-def ver_ficho(request):
-    hoy = timezone.now().date()
-    ficho = Ficho.objects.filter(usuario=request.user, cupo__fecha=hoy, estado='activo').order_by('-fecha_creacion').first()
+def ver_ficho(request, ficho_id=None):
+    if ficho_id:
+        ficho = Ficho.objects.filter(id=ficho_id, usuario=request.user).first()
+    else:
+        hoy = timezone.now().date()
+        ficho = Ficho.objects.filter(usuario=request.user, cupo__fecha=hoy, estado='activo').order_by('-fecha_creacion').first()
     numero_ficho = None
     if ficho:
         numero_ficho = Ficho.objects.filter(cupo=ficho.cupo, fecha_creacion__lt=ficho.fecha_creacion).count() + 1
@@ -351,7 +363,7 @@ from django.utils import timezone
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def cancelar_ficho(request, pk):
+def cancelar_ficho_api(request, pk):
     from .models import Ficho
     try:
         ficho = Ficho.objects.get(pk=pk, usuario=request.user)

@@ -13,6 +13,11 @@
   {% else %}
     <span>No disponible</span>
   {% endif %}
+  {% if ficho.estado == 'activo' %}
+    <form action="{% url 'cancelar_ficho' ficho.id %}" method="get" style="margin-top: 20px;">
+      <button type="submit" class="btn btn-danger">Cancelar ficho</button>
+    </form>
+  {% endif %}
 {% else %}
   <div class="alert alert-warning">No tienes un ficho activo para hoy.</div>
 {% endif %}

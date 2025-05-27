@@ -32,7 +32,7 @@
       <h4>Historial de fichos</h4>
       <table class="table table-sm">
         <tr>
-          <th>Fecha</th><th>Servicio</th><th>Hora</th><th>Estado</th>
+          <th>Fecha</th><th>Servicio</th><th>Hora</th><th>Estado</th><th>Ver</th>
         </tr>
         {% for ficho in historial_fichos %}
         <tr>
@@ -40,9 +40,10 @@
           <td>{{ ficho.cupo.nombre_servicio }}</td>
           <td>{{ ficho.hora }}</td>
           <td>{{ ficho.estado|title }}</td>
+          <td><a href="{% url 'ver_ficho' ficho.id %}" class="btn btn-info btn-sm">Ver</a></td>
         </tr>
         {% empty %}
-        <tr><td colspan="4">Sin fichos previos</td></tr>
+        <tr><td colspan="5">Sin fichos previos</td></tr>
         {% endfor %}
       </table>
     {% endif %}
@@ -65,21 +66,6 @@
         <li>No tienes fichos recientes.</li>
       {% endfor %}
     </ul>
-    {% if fichos_activos %}
-      <h3>Fichos Activos</h3>
-      <ul>
-        {% for ficho in fichos_activos %}
-          <li>
-            <a href="{% url 'ver_ficho' ficho.id %}">
-              <strong>Servicio:</strong> {{ ficho.cupo.nombre_servicio }} - 
-              <strong>Hora:</strong> {{ ficho.hora }}
-            </a>
-          </li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p>No tienes fichos activos.</p>
-    {% endif %}
   {% endif %}
   <form action="{% url 'logout' %}" method="post" style="display:inline; margin-left:10px;">
     {% csrf_token %}

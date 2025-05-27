@@ -1,6 +1,15 @@
 {% extends 'core/base.html' %}
 {% block content %}
 <h2>Solicitar Ficho</h2>
+<!-- Mostrar horarios de los servicios -->
+<div class="alert alert-info" style="margin-bottom: 20px;">
+    <strong>Horarios de los servicios:</strong>
+    <ul>
+        <li>Desayuno: 06:45 AM a 08:30 AM</li>
+        <li>Almuerzo: 11:30 AM a 01:30 PM</li>
+        <li>Cena: 05:30 PM a 07:30 PM</li>
+    </ul>
+</div>
 {% if mensaje_bloqueo %}
     <div style="color:red; font-weight:bold;">{{ mensaje_bloqueo }}</div>
     {% if ficho_existente %}
@@ -17,15 +26,39 @@
 <form method="post">
     {% csrf_token %}
     <label for="cupo_id">Servicio:</label>
-    <select name="cupo_id" id="cupo_id" required>
+    <select name="cupo_id" id="cupo_id" required onchange="actualizarHorario()">
         {% for servicio in servicios %}
-            <option value="{{ servicio.id }}">{{ servicio.nombre_servicio }} (Disponibles: {{ servicio.cantidad_disponible }})</option>
+            <option value="{{ servicio.id }}" data-servicio="{{ servicio.nombre_servicio }}">{{ servicio.nombre_servicio }} (Disponibles: {{ servicio.cantidad_disponible }})</option>
         {% endfor %}
     </select>
+    <div id="horario-servicio" style="margin: 10px 0; font-weight: bold;"></div>
     <label for="hora">Hora de asistencia:</label>
-    <input type="time" name="hora" id="hora" min="11:30" max="13:30" step="900" required>
+    <input type="time" name="hora" id="hora" required step="900">
+    
     <button type="submit">Solicitar</button>
 </form>
+<script>
+    const horarios = JSON.parse('{{ horarios_servicio|safe|escapejs }}');
+    function actualizarHorario() {
+        const select = document.getElementById('cupo_id');
+        const selected = select.options[select.selectedIndex];
+        const servicio = selected.getAttribute('data-servicio');
+        const horario = horarios[servicio];
+        if (horario) {
+            document.getElementById('horario-servicio').innerText = `Horario: ${horario.inicio} a ${horario.fin}`;
+            document.getElementById('hora').setAttribute('min', horario.inicio);
+            document.getElementById('hora').setAttribute('max', horario.fin);
+        } else {
+            document.getElementById('horario-servicio').innerText = '';
+            document.getElementById('hora').removeAttribute('min');
+            document.getElementById('hora').removeAttribute('max');
+        }
+    }
+    document.addEventListener('DOMContentLoaded', actualizarHorario);
+    document.getElementById('cupo_id').addEventListener('change', actualizarHorario);
+    // Forzar formato 12 horas visualmente (solo para navegadores que lo soportan)
+    document.getElementById('hora').setAttribute('lang', 'es-MX');
+</script>
 {% endif %}
 {% if messages %}
     <ul>

@@ -15,6 +15,7 @@ urlpatterns = [
     path('panel-admin/', views.panel_admin, name='panel_admin'),
     path('validar-ficho-admin/', views.validar_ficho_admin, name='validar_ficho_admin'),
     path('ver-ficho/', views.ver_ficho, name='ver_ficho'),
+    path('ver-ficho/<int:ficho_id>/', views.ver_ficho, name='ver_ficho'),
     path('api/fichos/', FichoListAPI.as_view(), name='api_fichos'),
     path('api/cupos/', CupoDisponibleListAPI.as_view(), name='api_cupos'),
     path('api/login/', obtain_auth_token, name='api_login'),
