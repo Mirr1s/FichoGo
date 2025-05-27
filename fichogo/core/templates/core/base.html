@@ -12,7 +12,7 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <!-- Favicon -->
-    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" type="image/png">
+    <link rel="icon" type="image/jpeg" href="{{ MEDIA_URL }}logo.jpg">
     <meta name="theme-color" content="#0d6efd">
     <style>
         body { font-family: 'Montserrat', sans-serif; }
@@ -48,9 +48,15 @@
     </style>
 </head>
 <body>
+  {% load static %}
   {% block navbar %}
     {% include 'core/navbar.html' %}
   {% endblock %}
+  <nav>
+    <a href="{% url 'home' %}">
+    </a>
+    <!-- ...resto del navbar... -->
+  </nav>
   <div class="container">
       {% if messages %}
         <ul class="messages mt-3" style="list-style:none;">

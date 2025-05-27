@@ -24,9 +24,7 @@
                     </div>
                     <div class="text-center mb-3">
                         {% if ficho.codigo_qr %}
-                        <img src="/{{ ficho.codigo_qr }}" alt="Código QR del ficho"
-                            class="img-fluid rounded border bg-white p-2"
-                            style="max-width:180px; width:100%; height:auto; box-shadow:0 2px 8px #0001;">
+                        <img src="{{ ficho.codigo_qr.url }}" alt="QR de Ficho">
                         {% else %}
                         <div class="alert alert-warning small">No se generó el código QR para este ficho.</div>
                         {% endif %}

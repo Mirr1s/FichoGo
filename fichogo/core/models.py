@@ -32,14 +32,13 @@ class Ficho(models.Model):
         return f"Ficho de {self.usuario.username} para {self.cupo.nombre_servicio} ({self.hora})"
 
     def save(self, *args, **kwargs):
-        creating = self.pk is None
-        super().save(*args, **kwargs)  # Guarda primero para tener el ID
-        if creating:
-            qr_data = str(self.id)  # Solo el ID
+        super().save(*args, **kwargs)
+        if not self.codigo_qr:
+            qr_data = str(self.id)
             qr_img = qrcode.make(qr_data)
             buffer = BytesIO()
-            qr_img.save(buffer, format='PNG')
+            qr_img.save(buffer, format='JPEG')  # Cambia a JPEG
             buffer.seek(0)
-            self.codigo_qr.save(f'ficho_{self.usuario.username}_{self.id}.png', File(buffer), save=False)
-            super().save(update_fields=['codigo_qr'])  # Guarda el QR
+            self.codigo_qr.save(f'ficho_{self.usuario.username}_{self.id}.jpg', File(buffer), save=False)  # Cambia a .jpg
+            super().save(update_fields=['codigo_qr'])
 
