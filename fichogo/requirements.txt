@@ -1,0 +1,3 @@
+# Archivo de dependencias para el proyecto Django
+Django>=3.2
+# Agrega aquí otras dependencias necesarias

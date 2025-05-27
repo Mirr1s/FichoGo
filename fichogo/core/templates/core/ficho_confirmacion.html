@@ -1,0 +1,18 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h2>Ficho generado exitosamente</h2>
+<p><strong>Servicio:</strong> {{ ficho.cupo.nombre_servicio }}</p>
+<p><strong>Fecha:</strong> {{ ficho.cupo.fecha|date:'d \d\e F \d\e Y' }}</p>
+<p><strong>Hora de asistencia:</strong> {{ ficho.hora }}</p>
+<p><strong>Estado:</strong> {{ ficho.estado }}</p>
+<p><strong>Código de estudiante:</strong> {{ ficho.usuario.username }}</p>
+<p><strong>N° de ficho:</strong> {{ numero_ficho }}</p>
+<p><strong>Código QR:</strong></p>
+{% if ficho.codigo_qr %}
+  <img src="{{ ficho.codigo_qr.url|default:ficho.codigo_qr }}" alt="Código QR del ficho" style="width:200px;">
+{% else %}
+  <span>No disponible</span>
+{% endif %}
+<p><strong>Número de personas por delante de ti:</strong> {{ fichos_adelante }}</p>
+<a href="{% url 'solicitar_ficho' %}">Solicitar otro ficho</a>
+{% endblock %}

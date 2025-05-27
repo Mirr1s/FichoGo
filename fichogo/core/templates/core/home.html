@@ -1,0 +1,27 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm">
+      <div class="card-body text-center">
+        {% if user.is_authenticated %}
+          <h2 class="card-title mb-3 text-success">¡Hola, {{ user.first_name|default:user.username }}!</h2>
+          <p class="card-text fs-5">Este es tu código QR de ficho. Muéstralo para validar tu ingreso:</p>
+          {% if ficho_qr_url %}
+            <img src="{{ ficho_qr_url }}" alt="QR de tu ficho" class="img-fluid my-3" style="max-width:220px;">
+          {% else %}
+            <div class="alert alert-warning">Aún no tienes un ficho generado.</div>
+            <a href="{% url 'solicitar_ficho' %}" class="btn btn-primary mt-2">Solicitar Ficho</a>
+          {% endif %}
+        {% else %}
+          <h2 class="card-title mb-3 text-primary">Bienvenido a <b>FichoGo</b></h2>
+          <p class="card-text fs-5">Gestiona tus fichos de manera fácil y rápida.</p>
+          <a href="{% url 'login' %}" class="btn btn-primary btn-lg mt-3">Iniciar sesión</a>
+          <a href="{% url 'registro_estudiante' %}" class="btn btn-outline-primary btn-lg mt-3 ms-2">Registrarse</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

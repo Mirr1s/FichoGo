@@ -1,0 +1,58 @@
+{% extends 'core/base.html' %}
+{% block content %}
+  {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <li class="alert alert-success">{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+<h2>Validar Ficho (Administrativo)</h2>
+<form method="post" class="mb-4" id="form-codigo">
+  {% csrf_token %}
+  <label for="codigo">Código de estudiante:</label>
+  <input type="text" name="codigo" id="codigo" placeholder="Ej: 20230001">
+  <button type="submit" class="btn btn-primary">Buscar ficho</button>
+</form>
+<button onclick="escanearQR()" class="btn btn-info mb-4">Escanear QR</button>
+<script>
+function escanearQR() {
+  // Simulación: en una app real aquí iría la lógica de escaneo QR
+  // Para demo, pide el código QR y lo coloca en el input
+  let codigo = prompt('Escanea el QR o ingresa el código leído:');
+  if (codigo) {
+    document.getElementById('codigo').value = codigo;
+    document.getElementById('form-codigo').submit();
+  }
+}
+</script>
+<form method="post" class="mb-4">
+  {% csrf_token %}
+  <label for="ficho_id">ID de ficho (desde QR):</label>
+  <input type="number" name="ficho_id" id="ficho_id" placeholder="Ej: 5">
+  <button type="submit" class="btn btn-primary">Buscar por ID</button>
+</form>
+{% if mensaje_error %}
+  <div class="alert alert-danger">{{ mensaje_error }}</div>
+{% endif %}
+{% if ficho %}
+  <div class="alert alert-info">
+    <p><strong>Código de estudiante:</strong> {{ ficho.usuario.username }}</p>
+    <p><strong>Nombre:</strong> {{ ficho.usuario.first_name }}</p>
+    <p><strong>Servicio:</strong> {{ ficho.cupo.nombre_servicio }}</p>
+    <p><strong>Fecha:</strong> {{ ficho.cupo.fecha }}</p>
+    <p><strong>Hora:</strong> {{ ficho.hora }}</p>
+    <p><strong>N° de ficho:</strong> {{ numero_ficho }}</p>
+    <p><strong>Estado actual:</strong> {{ ficho.estado }}</p>
+    {% if ficho.estado == 'activo' %}
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="codigo" value="{{ ficho.usuario.username }}">
+        <button type="submit" name="validar" class="btn btn-success">Validar ficho</button>
+      </form>
+    {% endif %}
+  </div>
+{% elif ficho is not none %}
+  <div class="alert alert-danger">No se encontró un ficho activo para ese código o ID.</div>
+{% endif %}
+{% endblock %}

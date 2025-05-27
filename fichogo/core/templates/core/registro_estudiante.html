@@ -1,0 +1,42 @@
+{% extends 'core/base.html' %}
+{% block content %}
+  <h2>Registro de Estudiante</h2>
+  {% if messages %}
+    {% for message in messages %}
+      <p style="color:green;">{{ message }}</p>
+    {% endfor %}
+  {% endif %}
+  {% if form.errors %}
+    <ul class="alert alert-danger">
+      {% for field in form %}
+        {% for error in field.errors %}
+          <li>{{ field.label }}: {{ error }}</li>
+        {% endfor %}
+      {% endfor %}
+      {% for error in form.non_field_errors %}
+        <li>{{ error }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="id_first_name">Nombre:</label>
+      {{ form.first_name }}
+    </div>
+    <div class="form-group">
+      <label for="id_username">Código de estudiante:</label>
+      {{ form.username }}
+    </div>
+    <div class="form-group">
+      <label for="id_password1">Contraseña:</label>
+      {{ form.password1 }}
+    </div>
+    <div class="form-group">
+      <label for="id_password2">Confirmar contraseña:</label>
+      {{ form.password2 }}
+    </div>
+    <button type="submit" class="btn btn-primary">Registrarse</button>
+  </form>
+  <p class="mt-3">¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión aquí</a></p>
+{% endblock %}

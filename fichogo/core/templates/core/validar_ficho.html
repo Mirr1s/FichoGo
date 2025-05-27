@@ -1,0 +1,15 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h2>Validar Ficho</h2>
+<p><strong>Código de estudiante:</strong> {{ ficho.usuario.username }}</p>
+<p><strong>Nombre:</strong> {{ ficho.usuario.first_name }}</p>
+<p><strong>Servicio:</strong> {{ ficho.cupo.nombre_servicio }}</p>
+<p><strong>Fecha:</strong> {{ ficho.cupo.fecha|date:'d \d\e F \d\e Y' }}</p>
+<p><strong>Hora de asistencia:</strong> {{ ficho.hora }}</p>
+<p><strong>N° de ficho:</strong> {{ numero_ficho }}</p>
+<p><strong>Estado actual:</strong> {{ ficho.estado }}</p>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-success">Validar ficho</button>
+</form>
+{% endblock %}

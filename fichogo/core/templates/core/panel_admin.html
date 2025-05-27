@@ -1,0 +1,57 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h2>Panel Administrativo</h2>
+<h3>Agregar nuevo cupo</h3>
+<form method="post" action="{% url 'panel_admin' %}" class="mb-4">
+  {% csrf_token %}
+  <label for="nombre_servicio">Servicio:</label>
+  <input type="text" name="nombre_servicio" id="nombre_servicio" required>
+  <label for="fecha">Fecha:</label>
+  <input type="date" name="fecha" id="fecha" required>
+  <label for="cantidad_total">Cantidad total:</label>
+  <input type="number" name="cantidad_total" id="cantidad_total" min="1" required>
+  <button type="submit" class="btn btn-success">Agregar cupo</button>
+</form>
+<h3>Estadísticas</h3>
+<ul>
+  <li>Total de fichos: {{ total_fichos }}</li>
+  <li>Fichos de hoy: {{ fichos_hoy }}</li>
+  <li>Fichos usados: {{ fichos_usados }}</li>
+  <li>Fichos cancelados: {{ fichos_cancelados }}</li>
+  <li>Fichos activos: {{ fichos_activos }}</li>
+</ul>
+<h3>Historial de validaciones recientes</h3>
+<table class="table">
+  <tr>
+    <th>Estudiante</th><th>Servicio</th><th>Fecha</th><th>Hora</th><th>N° Ficho</th>
+  </tr>
+  {% for ficho in historial %}
+  <tr>
+    <td>{{ ficho.usuario.username }}</td>
+    <td>{{ ficho.cupo.nombre_servicio }}</td>
+    <td>{{ ficho.cupo.fecha }}</td>
+    <td>{{ ficho.hora }}</td>
+    <td>{{ forloop.counter }}</td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="5">Sin validaciones recientes</td></tr>
+  {% endfor %}
+</table>
+<h3>Gestión de cupos</h3>
+<table class="table">
+  <tr>
+    <th>Servicio</th><th>Fecha</th><th>Total</th><th>Disponibles</th>
+  </tr>
+  {% for cupo in cupos %}
+  <tr>
+    <td>{{ cupo.nombre_servicio }}</td>
+    <td>{{ cupo.fecha }}</td>
+    <td>{{ cupo.cantidad_total }}</td>
+    <td>{{ cupo.cantidad_disponible }}</td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="4">Sin cupos registrados</td></tr>
+  {% endfor %}
+</table>
+<a href="{% url 'admin:index' %}" class="btn btn-secondary">Ir al admin de Django</a>
+{% endblock %}

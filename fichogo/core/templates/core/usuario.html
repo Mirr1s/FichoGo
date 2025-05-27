@@ -1,0 +1,73 @@
+{% extends 'core/base.html' %}
+{% block content %}
+  <h2>Bienvenido, {{ user.get_full_name|default:user.username }}!</h2>
+  <p>Has iniciado sesión correctamente.</p>
+  {% if es_admin %}
+    <a href="{% url 'validar_ficho_admin' %}" class="btn btn-primary">Ir a Validar Fichos</a>
+    <hr>
+    {% include 'core/panel_admin.html' %}
+  {% else %}
+    <a href="{% url 'solicitar_ficho' %}" class="btn btn-primary">Solicitar Ficho</a>
+    <div class="mt-3">
+      <strong>Usuario:</strong> {{ user.first_name }} &nbsp; <strong>Código:</strong> {{ user.username }}
+    </div>
+    {% if ficho_existente %}
+      <div class="alert alert-info mt-3">
+        <p><strong>Ficho activo para hoy:</strong></p>
+        <p>Servicio: {{ ficho_existente.cupo.nombre_servicio }}</p>
+        <p>Hora: {{ ficho_existente.hora }}</p>
+        <p>Estado: {{ ficho_existente.estado }}</p>
+        {% if ficho_existente.qr %}
+          <div class="mb-2">
+            <img src="{{ ficho_existente.qr.url }}" alt="QR del ficho" style="max-width:200px;">
+          </div>
+        {% endif %}
+        <form action="{% url 'cancelar_ficho' ficho_existente.id %}" method="get">
+          <button type="submit" class="btn btn-danger">Cancelar ficho</button>
+        </form>
+      </div>
+    {% endif %}
+    {% if historial_fichos %}
+      <hr>
+      <h4>Historial de fichos</h4>
+      <table class="table table-sm">
+        <tr>
+          <th>Fecha</th><th>Servicio</th><th>Hora</th><th>Estado</th>
+        </tr>
+        {% for ficho in historial_fichos %}
+        <tr>
+          <td>{{ ficho.cupo.fecha }}</td>
+          <td>{{ ficho.cupo.nombre_servicio }}</td>
+          <td>{{ ficho.hora }}</td>
+          <td>{{ ficho.estado|title }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">Sin fichos previos</td></tr>
+        {% endfor %}
+      </table>
+    {% endif %}
+    <hr>
+    <h3>Últimos 3 fichos</h3>
+    <ul>
+      {% for ficho in ultimos_fichos %}
+        <li>
+          Servicio: {{ ficho.cupo.nombre_servicio }}<br>
+          Hora: {{ ficho.hora }}<br>
+          Estado: {{ ficho.estado }}<br>
+          Fecha: {{ ficho.fecha_creacion|date:"d/m/Y H:i" }}
+          {% if ficho.codigo_qr %}
+            <br><img src="{{ ficho.codigo_qr.url }}" alt="QR" width="100">
+          {% else %}
+            <br>QR no disponible
+          {% endif %}
+        </li>
+      {% empty %}
+        <li>No tienes fichos recientes.</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  <form action="{% url 'logout' %}" method="post" style="display:inline; margin-left:10px;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-secondary">Cerrar Sesión</button>
+  </form>
+{% endblock %}
