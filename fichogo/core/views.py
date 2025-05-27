@@ -10,7 +10,7 @@ from django.contrib.auth import authenticate, login, logout
 import os
 from django.conf import settings
 from datetime import datetime
-from django.db.models import Count
+from django.db.models import Count, Q
 from django import template
 from django.contrib.admin.views.decorators import staff_member_required
 from rest_framework.permissions import AllowAny
@@ -152,14 +152,14 @@ def solicitar_ficho(request):
 @login_required
 def validar_ficho(request, ficho_id):
     ficho = Ficho.objects.get(id=ficho_id)
-    # Calcular el número de ficho
-    numero_ficho = Ficho.objects.filter(cupo=ficho.cupo, fecha_creacion__lt=ficho.fecha_creacion).count() + 1
     if request.method == 'POST':
         ficho.estado = 'usado'
         ficho.hora_validacion = timezone.now()
         ficho.save()
         messages.success(request, 'Ficho validado correctamente.')
-        return redirect('usuario')
+        return redirect('panel_admin')
+    # Si GET, solo mostrar info (no se usa en admin)
+    numero_ficho = Ficho.objects.filter(cupo=ficho.cupo, fecha_creacion__lt=ficho.fecha_creacion).count() + 1
     return render(request, 'core/validar_ficho.html', {
         'ficho': ficho,
         'numero_ficho': numero_ficho
@@ -246,8 +246,16 @@ def panel_admin(request):
     fichos_usados = Ficho.objects.filter(estado__in=['usado', 'validado']).count()
     fichos_cancelados = Ficho.objects.filter(estado='cancelado').count()
     fichos_activos = Ficho.objects.filter(estado='activo').count()
-    # Historial de validaciones
-    historial = Ficho.objects.filter(estado__in=['usado', 'validado']).order_by('-fecha_creacion')[:50]
+    # Filtro por servicio
+    servicio_filtro = request.GET.get('servicio')
+    codigo_estudiante = request.GET.get('codigo_estudiante')
+    fichos_filtrados = Ficho.objects.all().order_by('-fecha_creacion')
+    if servicio_filtro in ['desayuno', 'almuerzo', 'cena']:
+        fichos_filtrados = fichos_filtrados.filter(cupo__nombre_servicio=servicio_filtro)
+    if codigo_estudiante:
+        fichos_filtrados = fichos_filtrados.filter(usuario__username__icontains=codigo_estudiante)
+    # Solo fichos activos para validar
+    fichos_para_validar = Ficho.objects.filter(estado='activo').order_by('cupo__fecha', 'hora')
     # Cupos
     cupos = Cupo.objects.all().order_by('-fecha')
     return render(request, 'core/panel_admin.html', {
@@ -256,8 +264,11 @@ def panel_admin(request):
         'fichos_usados': fichos_usados,
         'fichos_cancelados': fichos_cancelados,
         'fichos_activos': fichos_activos,
-        'historial': historial,
-        'cupos': cupos
+        'fichos_filtrados': fichos_filtrados,
+        'cupos': cupos,
+        'servicio_filtro': servicio_filtro,
+        'codigo_estudiante': codigo_estudiante,
+        'fichos_para_validar': fichos_para_validar
     })
 
 @staff_member_required
@@ -275,7 +286,7 @@ def validar_ficho_admin(request):
                 ficho.hora_validacion = timezone.now()
                 ficho.save()
                 messages.success(request, 'Ficho validado correctamente.')
-                return redirect('validar_ficho_admin')
+                return redirect('panel_admin')
         except Ficho.DoesNotExist:
             mensaje_error = 'Ficho no encontrado.'
     return render(request, 'core/validar_ficho_admin.html', {

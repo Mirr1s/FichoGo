@@ -1,57 +1,105 @@
 {% extends 'core/base.html' %}
 {% block content %}
-<h2>Panel Administrativo</h2>
-<h3>Agregar nuevo cupo</h3>
-<form method="post" action="{% url 'panel_admin' %}" class="mb-4">
-  {% csrf_token %}
-  <label for="nombre_servicio">Servicio:</label>
-  <input type="text" name="nombre_servicio" id="nombre_servicio" required>
-  <label for="fecha">Fecha:</label>
-  <input type="date" name="fecha" id="fecha" required>
-  <label for="cantidad_total">Cantidad total:</label>
-  <input type="number" name="cantidad_total" id="cantidad_total" min="1" required>
-  <button type="submit" class="btn btn-success">Agregar cupo</button>
-</form>
-<h3>Estadísticas</h3>
-<ul>
-  <li>Total de fichos: {{ total_fichos }}</li>
-  <li>Fichos de hoy: {{ fichos_hoy }}</li>
-  <li>Fichos usados: {{ fichos_usados }}</li>
-  <li>Fichos cancelados: {{ fichos_cancelados }}</li>
-  <li>Fichos activos: {{ fichos_activos }}</li>
-</ul>
-<h3>Historial de validaciones recientes</h3>
-<table class="table">
-  <tr>
-    <th>Estudiante</th><th>Servicio</th><th>Fecha</th><th>Hora</th><th>N° Ficho</th>
-  </tr>
-  {% for ficho in historial %}
-  <tr>
-    <td>{{ ficho.usuario.username }}</td>
-    <td>{{ ficho.cupo.nombre_servicio }}</td>
-    <td>{{ ficho.cupo.fecha }}</td>
-    <td>{{ ficho.hora }}</td>
-    <td>{{ forloop.counter }}</td>
-  </tr>
-  {% empty %}
-  <tr><td colspan="5">Sin validaciones recientes</td></tr>
-  {% endfor %}
-</table>
-<h3>Gestión de cupos</h3>
-<table class="table">
-  <tr>
-    <th>Servicio</th><th>Fecha</th><th>Total</th><th>Disponibles</th>
-  </tr>
-  {% for cupo in cupos %}
-  <tr>
-    <td>{{ cupo.nombre_servicio }}</td>
-    <td>{{ cupo.fecha }}</td>
-    <td>{{ cupo.cantidad_total }}</td>
-    <td>{{ cupo.cantidad_disponible }}</td>
-  </tr>
-  {% empty %}
-  <tr><td colspan="4">Sin cupos registrados</td></tr>
-  {% endfor %}
-</table>
-<a href="{% url 'admin:index' %}" class="btn btn-secondary">Ir al admin de Django</a>
+<div class="container py-3 px-1 px-sm-2">
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-11 col-md-10 col-lg-9 col-xl-8">
+            <div class="card shadow-lg border-0 mb-4">
+                <div class="card-body p-3 p-md-4">
+                    <h2 class="card-title text-center mb-4 text-primary fw-bold" style="letter-spacing:1px; font-size:1.4rem;">Panel de Administración</h2>
+                    <form method="get" class="row g-2 g-md-3 mb-4 align-items-end">
+                        <div class="col-12 col-md-4">
+                            <label for="servicio" class="form-label fw-semibold small">Servicio</label>
+                            <select name="servicio" id="servicio" class="form-select form-select-sm">
+                                <option value="">Todos</option>
+                                <option value="desayuno" {% if filtro_servicio == 'desayuno' %}selected{% endif %}>Desayuno</option>
+                                <option value="almuerzo" {% if filtro_servicio == 'almuerzo' %}selected{% endif %}>Almuerzo</option>
+                                <option value="cena" {% if filtro_servicio == 'cena' %}selected{% endif %}>Cena</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label for="codigo_estudiante" class="form-label fw-semibold small">Código de estudiante</label>
+                            <input type="text" name="codigo_estudiante" id="codigo_estudiante" class="form-control form-control-sm" value="{{ filtro_codigo }}">
+                        </div>
+                        <div class="col-12 col-md-4 d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">Filtrar</button>
+                        </div>
+                    </form>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-hover align-middle small">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Folio</th>
+                                    <th>Estudiante</th>
+                                    <th>Servicio</th>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Estado</th>
+                                    <th>Validar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ficho in fichos %}
+                                <tr>
+                                    <td>{{ ficho.id }}</td>
+                                    <td>{{ ficho.usuario.username }}</td>
+                                    <td>{{ ficho.cupo.get_nombre_servicio_display }}</td>
+                                    <td>{{ ficho.cupo.fecha|date:'d/m/Y' }}</td>
+                                    <td>{{ ficho.hora }}</td>
+                                    <td><span class="badge bg-info text-dark">{{ ficho.estado }}</span></td>
+                                    <td>
+                                        {% if ficho.estado == 'pendiente' %}
+                                        <form method="post" action="{% url 'validar_ficho' ficho.id %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-success btn-sm">Validar</button>
+                                        </form>
+                                        {% else %}
+                                            <span class="text-success">Validado</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="7" class="text-center">No hay fichos para mostrar.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card mt-4">
+                        <div class="card-header bg-primary text-white fw-bold small">Agregar cupos</div>
+                        <div class="card-body">
+                            <form method="post" class="row g-2 g-md-3">
+                                {% csrf_token %}
+                                <div class="col-12 col-md-4">
+                                    <label for="servicio_cupo" class="form-label small">Servicio</label>
+                                    <select name="servicio_cupo" id="servicio_cupo" class="form-select form-select-sm" required>
+                                        <option value="desayuno">Desayuno (06:45-08:30)</option>
+                                        <option value="almuerzo">Almuerzo (11:30-13:30)</option>
+                                        <option value="cena">Cena (17:30-19:30)</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <label for="fecha_cupo" class="form-label small">Fecha</label>
+                                    <input type="date" name="fecha_cupo" id="fecha_cupo" class="form-control form-control-sm" required>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <label for="cantidad_cupo" class="form-label small">Cantidad</label>
+                                    <input type="number" name="cantidad_cupo" id="cantidad_cupo" class="form-control form-control-sm" min="1" required>
+                                </div>
+                                <div class="col-12 d-grid">
+                                    <button type="submit" class="btn btn-primary btn-lg">Agregar cupos</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% if messages %}
+                        <div class="mt-3">
+                            {% for message in messages %}
+                                <div class="alert alert-warning small">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

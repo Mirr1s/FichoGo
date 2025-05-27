@@ -1,10 +1,29 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
-  <a class="navbar-brand" href="{% url 'usuario' %}">FichoGo</a>
-  <div class="collapse navbar-collapse">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
-      <li class="nav-item"><a class="nav-link" href="/panel-admin/">Panel Admin</a></li>
-      <li class="nav-item"><a class="nav-link" href="/logout/">Salir</a></li>
-    </ul>
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+  <div class="container">
+    <a class="navbar-brand fw-bold text-primary d-flex align-items-center gap-2" href="{% url 'usuario' %}" style="font-size:1.7rem; letter-spacing:1px;">
+      <img src="/static/core/logo.png" alt="FichoGo" width="38" height="38" class="align-text-bottom" style="object-fit:contain;max-height:38px;">
+      <span style="font-weight:700; letter-spacing:1px;">FichoGo</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'solicitar_ficho' %}active fw-bold text-primary{% endif %}" href="{% url 'solicitar_ficho' %}">Solicitar Ficho</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'usuario' %}active fw-bold text-primary{% endif %}" href="{% url 'usuario' %}">Historial</a>
+        </li>
+        {% if request.user.is_staff %}
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'panel_admin' %}active fw-bold text-primary{% endif %}" href="{% url 'panel_admin' %}">Panel Admin</a>
+        </li>
+        {% endif %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'logout' %}">Cerrar sesión</a>
+        </li>
+      </ul>
+    </div>
   </div>
 </nav>
