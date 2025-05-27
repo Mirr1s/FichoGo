@@ -38,7 +38,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for ficho in fichos %}
+                                {% for ficho in fichos_filtrados %}
                                 <tr>
                                     <td>{{ ficho.id }}</td>
                                     <td>{{ ficho.usuario.username }}</td>
@@ -47,7 +47,7 @@
                                     <td>{{ ficho.hora }}</td>
                                     <td><span class="badge bg-info text-dark">{{ ficho.estado }}</span></td>
                                     <td>
-                                        {% if ficho.estado == 'pendiente' %}
+                                        {% if ficho.estado == 'activo' %}
                                         <form method="post" action="{% url 'validar_ficho' ficho.id %}" class="d-inline">
                                             {% csrf_token %}
                                             <button type="submit" class="btn btn-success btn-sm">Validar</button>
