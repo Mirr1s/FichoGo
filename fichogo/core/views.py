@@ -72,19 +72,15 @@ def solicitar_ficho(request):
         'cena': {'inicio': '17:30', 'fin': '19:30'},
     }
 
-    # Verifica si ya tiene un ficho activo para el mismo día
-    ficho_existente = Ficho.objects.filter(
+    # Verifica si ya tiene un ficho activo para el mismo día y el mismo servicio
+    cupos_hoy = Cupo.objects.filter(fecha=timezone.now().date())
+    servicios_pedidos = Ficho.objects.filter(
         usuario=request.user,
         estado='activo',
         cupo__fecha=timezone.now().date()
-    ).first()
-
-    if ficho_existente:
-        messages.warning(request, "Ya tienes un ficho activo. Cancela o espera a que expire antes de solicitar otro.")
-        return redirect('home')
+    ).values_list('cupo__nombre_servicio', flat=True)
 
     servicios = Cupo.objects.filter(fecha=timezone.now().date(), cantidad_disponible__gt=0)
-    # Recalcular cupos disponibles sumando los que se liberaron tras 10 minutos de validación
     servicios = list(servicios)
     for cupo in servicios:
         fichos_usados = Ficho.objects.filter(cupo=cupo, estado='usado', hora_validacion__isnull=False)
@@ -93,30 +89,12 @@ def solicitar_ficho(request):
             if ficho.hora_validacion and (timezone.now() - ficho.hora_validacion).total_seconds() >= 600:
                 liberados += 1
         cupo.cantidad_disponible += liberados
-    usuario = request.user
-    hoy = timezone.now().date()
-    ficho_existente = Ficho.objects.filter(usuario=usuario, cupo__fecha=hoy, estado='activo').order_by('-fecha_creacion').first()
+
     puede_pedir = True
     mensaje_bloqueo = None
     fichos_adelante = None
-    if ficho_existente:
-        # Si la hora ya pasó y no fue validado, permitir nuevo ficho
-        hora_ficho = ficho_existente.hora
-        hora_actual = timezone.now().time()
-        if ficho_existente.estado == 'activo':
-            if hora_ficho < hora_actual:
-                # Cambiar estado a 'expirado' (opcional)
-                ficho_existente.estado = 'expirado'
-                ficho_existente.save()
-            else:
-                puede_pedir = False
-                mensaje_bloqueo = f"Ya tienes un ficho activo para hoy a las {hora_ficho}. Solo podrás pedir otro si pasa la hora o si tu ficho es validado."
-                fichos_adelante = Ficho.objects.filter(cupo=ficho_existente.cupo, fecha_creacion__lt=ficho_existente.fecha_creacion).count()
-        elif ficho_existente.estado == 'usado':
-            puede_pedir = False
-            mensaje_bloqueo = "Ya has validado tu ficho para hoy. Solo podrás pedir otro ficho mañana."
-    if not puede_pedir:
-        return render(request, 'core/solicitar_ficho.html', {'servicios': servicios, 'mensaje_bloqueo': mensaje_bloqueo, 'ficho_existente': ficho_existente, 'fichos_adelante': fichos_adelante, 'horarios_servicio': horarios_servicio})
+    ficho_existente = None
+    fichos_activos = Ficho.objects.filter(usuario=request.user, estado='activo', cupo__fecha=timezone.now().date())
     if request.method == 'POST':
         cupo_id = request.POST.get('cupo_id')
         hora = request.POST.get('hora')
@@ -125,6 +103,18 @@ def solicitar_ficho(request):
         except Cupo.DoesNotExist:
             messages.error(request, 'No hay cupos disponibles para este servicio.')
             return redirect('solicitar_ficho')
+        # Verifica si ya tiene un ficho activo para este servicio hoy
+        ficho_existente = Ficho.objects.filter(usuario=request.user, estado='activo', cupo__fecha=timezone.now().date(), cupo__nombre_servicio=cupo.nombre_servicio).first()
+        if ficho_existente:
+            mensaje_bloqueo = f"Ya tienes un ficho activo para el servicio {cupo.get_nombre_servicio_display()} hoy. Cancela o espera a que expire antes de solicitar otro para este servicio."
+            return render(request, 'core/solicitar_ficho.html', {
+                'servicios': servicios,
+                'mensaje_bloqueo': mensaje_bloqueo,
+                'ficho_existente': ficho_existente,
+                'fichos_adelante': fichos_adelante,
+                'horarios_servicio': horarios_servicio,
+                'historial_fichos_activos': fichos_activos
+            })
         # Validar horario según el servicio
         servicio = cupo.nombre_servicio
         hora_inicio = horarios_servicio[servicio]['inicio']
@@ -132,12 +122,10 @@ def solicitar_ficho(request):
         if not (hora >= hora_inicio and hora <= hora_fin):
             messages.error(request, f'El servicio {servicio} solo está disponible de {hora_inicio} a {hora_fin}.')
             return redirect('solicitar_ficho')
-        # Calcular posición en la fila
-        fichos_anteriores = Ficho.objects.filter(cupo=cupo, fecha_creacion__lt=timezone.now()).count()
         # Crear el ficho
         ficho = Ficho.objects.create(usuario=request.user, cupo=cupo, hora=hora)
         # Generar QR con SOLO el ID del ficho
-        qr_data = str(ficho.id)  # SOLO el ID
+        qr_data = str(ficho.id)
         qr_img = qrcode.make(qr_data)
         buffer = BytesIO()
         qr_img.save(buffer, format='PNG')
@@ -146,15 +134,20 @@ def solicitar_ficho(request):
         ficho.save()
         # Actualizar cupo
         cupo.cantidad_disponible -= 1
-        cupo.save()        # Calcular cuántos fichos hay por delante
-        fichos_adelante = Ficho.objects.filter(cupo=cupo, fecha_creacion__lt=ficho.fecha_creacion).count()
-        # Calcular el número de ficho
-        numero_ficho = fichos_adelante + 1
-        # Construir la URL absoluta para el QR
-        qr_url = os.path.join(settings.MEDIA_URL, qr_path).replace('\\', '/')
+        cupo.save()
         messages.success(request, 'Ficho generado exitosamente.')
         return redirect('usuario')
-    return render(request, 'core/solicitar_ficho.html', {'servicios': servicios, 'horarios_servicio': horarios_servicio})
+    else:
+        # Si no es POST, mostrar si ya tiene fichos activos por servicio
+        fichos_activos = Ficho.objects.filter(usuario=request.user, estado='activo', cupo__fecha=timezone.now().date())
+    return render(request, 'core/solicitar_ficho.html', {
+        'servicios': servicios,
+        'mensaje_bloqueo': mensaje_bloqueo,
+        'ficho_existente': ficho_existente,
+        'fichos_adelante': fichos_adelante,
+        'horarios_servicio': horarios_servicio,
+        'historial_fichos_activos': fichos_activos
+    })
 
 @login_required
 def validar_ficho(request, ficho_id):

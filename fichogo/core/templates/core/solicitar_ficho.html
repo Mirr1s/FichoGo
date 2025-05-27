@@ -11,17 +11,16 @@
     </ul>
 </div>
 {% if mensaje_bloqueo %}
-    <div style="color:red; font-weight:bold;">{{ mensaje_bloqueo }}</div>
-    {% if ficho_existente %}
-        <hr>
-        <h2>Ficho generado exitosamente</h2>
-        <p><strong>Servicio:</strong> {{ ficho_existente.cupo.nombre_servicio }}</p>
-        <p><strong>Fecha:</strong> {{ ficho_existente.cupo.fecha|date:'d \d\e F \d\e Y' }}</p>
-        <p><strong>Hora de asistencia:</strong> {{ ficho_existente.hora }}</p>
-        <p><strong>Estado:</strong> {{ ficho_existente.estado }}</p>
-        <p><strong>Código QR:</strong></p>
-        <img src="/{{ ficho_existente.codigo_qr }}" alt="Código QR del ficho" style="width:200px;">        <p><strong>Número de personas por delante de ti:</strong> {{ fichos_adelante }}</p>
-    {% endif %}
+    <div class="alert alert-success" role="alert" style="margin-bottom: 20px;">{{ mensaje_bloqueo }}</div>
+{% elif ficho_existente %}
+    <hr>
+    <h2>Ficho generado exitosamente</h2>
+    <p><strong>Servicio:</strong> {{ ficho_existente.cupo.nombre_servicio }}</p>
+    <p><strong>Fecha:</strong> {{ ficho_existente.cupo.fecha|date:'d \\d\\e F \\d\\e Y' }}</p>
+    <p><strong>Hora de asistencia:</strong> {{ ficho_existente.hora }}</p>
+    <p><strong>Estado:</strong> {{ ficho_existente.estado }}</p>
+    <p><strong>Código QR:</strong></p>
+    <img src="/{{ ficho_existente.codigo_qr }}" alt="Código QR del ficho" style="width:200px;">        <p><strong>Número de personas por delante de ti:</strong> {{ fichos_adelante }}</p>
 {% else %}
 <form method="post">
     {% csrf_token %}
@@ -33,10 +32,24 @@
     </select>
     <div id="horario-servicio" style="margin: 10px 0; font-weight: bold;"></div>
     <label for="hora">Hora de asistencia:</label>
-    <input type="time" name="hora" id="hora" required step="900">
-    
+    <input type="time" name="hora" id="hora" required>
+    <small>Formato: 12 horas (AM/PM)</small>
     <button type="submit">Solicitar</button>
 </form>
+
+<!-- Mostrar servicios activos del usuario -->
+{% with fichos_activos=historial_fichos_activos %}
+{% if fichos_activos %}
+    <div class="alert alert-success mt-3">
+        <strong>Servicios activos hoy:</strong>
+        <ul>
+        {% for ficho in fichos_activos %}
+            <li>{{ ficho.cupo.get_nombre_servicio_display }} - {{ ficho.hora }} (<a href="{% url 'ver_ficho' ficho.id %}">ver</a>)</li>
+        {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+{% endwith %}
 <script>
     const horarios = JSON.parse('{{ horarios_servicio|safe|escapejs }}');
     function actualizarHorario() {
@@ -46,8 +59,9 @@
         const horario = horarios[servicio];
         if (horario) {
             document.getElementById('horario-servicio').innerText = `Horario: ${horario.inicio} a ${horario.fin}`;
-            document.getElementById('hora').setAttribute('min', horario.inicio);
-            document.getElementById('hora').setAttribute('max', horario.fin);
+            // Ya no se fuerza min/max en el input, solo se muestra el horario permitido
+            document.getElementById('hora').removeAttribute('min');
+            document.getElementById('hora').removeAttribute('max');
         } else {
             document.getElementById('horario-servicio').innerText = '';
             document.getElementById('hora').removeAttribute('min');
@@ -56,7 +70,6 @@
     }
     document.addEventListener('DOMContentLoaded', actualizarHorario);
     document.getElementById('cupo_id').addEventListener('change', actualizarHorario);
-    // Forzar formato 12 horas visualmente (solo para navegadores que lo soportan)
     document.getElementById('hora').setAttribute('lang', 'es-MX');
 </script>
 {% endif %}
