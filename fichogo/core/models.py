@@ -5,13 +5,19 @@ from io import BytesIO
 from django.core.files import File
 
 class Cupo(models.Model):
-    nombre_servicio = models.CharField(max_length=100)
+    SERVICIOS = [
+        ('desayuno', 'Desayuno (6:45 am - 8:30 am)'),
+        ('almuerzo', 'Almuerzo (11:30 am - 1:30 pm)'),
+        ('cena', 'Cena (5:30 pm - 7:30 pm)')
+    ]
+
+    nombre_servicio = models.CharField(max_length=100, choices=SERVICIOS, verbose_name='Servicio')
     cantidad_total = models.PositiveIntegerField()
     cantidad_disponible = models.PositiveIntegerField()
     fecha = models.DateField()
 
     def __str__(self):
-        return f"{self.nombre_servicio} ({self.fecha})"
+        return f"{self.get_nombre_servicio_display()} ({self.fecha})"
 
 class Ficho(models.Model):
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

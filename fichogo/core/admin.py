@@ -3,9 +3,13 @@ from .models import Cupo, Ficho
 
 @admin.register(Cupo)
 class CupoAdmin(admin.ModelAdmin):
-    list_display = ('nombre_servicio', 'fecha', 'cantidad_total', 'cantidad_disponible')
+    list_display = ('get_nombre_servicio_display', 'fecha', 'cantidad_total', 'cantidad_disponible')
     search_fields = ('nombre_servicio',)
-    list_filter = ('fecha',)
+    list_filter = ('fecha', 'nombre_servicio')
+
+    def get_nombre_servicio_display(self, obj):
+        return obj.get_nombre_servicio_display()
+    get_nombre_servicio_display.short_description = 'Servicio'
 
 @admin.register(Ficho)
 class FichoAdmin(admin.ModelAdmin):

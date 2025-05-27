@@ -30,7 +30,8 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '192.168.1.10',
     '192.168.1.14',
-    '192.168.1.94'  # <-- agrega tu IP aquí
+    '192.168.1.94',  # <-- agrega tu IP aquí
+    '192.168.1.7',  # Dirección IP local
 ]
 
 
