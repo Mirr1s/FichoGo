@@ -32,6 +32,7 @@ ALLOWED_HOSTS = [
     '192.168.1.14',
     '192.168.1.94',  # <-- agrega tu IP aquí
     '192.168.1.7',  # Dirección IP local
+    '192.168.1.13',  # <-- agregada para permitir acceso desde esa IP
 ]
 
 

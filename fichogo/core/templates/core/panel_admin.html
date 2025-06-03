@@ -7,6 +7,9 @@
                 <div class="card-body p-3 p-md-4">
                     <h2 class="card-title text-center mb-4 text-primary fw-bold" style="letter-spacing:1px; font-size:1.4rem;">Panel de Administración</h2>
                     <p class="text-center mb-4"><strong>Administrador:</strong> {{ request.user.first_name }} ({{ request.user.username }})</p>
+                    <div class="d-grid gap-2 mb-3">
+                        <a href="/admin/" target="_blank" class="btn btn-dark">Ir al panel Django Admin</a>
+                    </div>
                     <form method="get" class="row g-2 g-md-3 mb-4 align-items-end">
                         <div class="col-12 col-md-4">
                             <label for="servicio" class="form-label fw-semibold small">Servicio</label>
