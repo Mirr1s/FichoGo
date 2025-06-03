@@ -20,7 +20,7 @@ Este diagrama muestra los **actores** que interactúan con el sistema y los **ca
 
 **Actores principales:**
 - **Estudiante**: Solicita el ficho digital, consulta cupos, recibe confirmación.
-- **Personal del Comedor**: Escanea el código QR/NFC y decide si permitir o denegar el acceso.
+- **Personal del Comedor**: Escanea el código QR o NFC y decide si permitir o denegar el acceso.
 - **Administrador**: Configura los parámetros del comedor como la capacidad y los horarios.
 
 **Propósito:** Identificar y organizar las funcionalidades del sistema desde el punto de vista del usuario final.
@@ -36,7 +36,7 @@ Este diagrama muestra paso a paso cómo un estudiante solicita un ficho desde qu
 **Puntos clave del flujo:**
 - Verificación de credenciales.
 - Consulta de disponibilidad de cupos.
-- Generación del código QR/NFC si hay disponibilidad.
+- Generación del código QR o NFC si hay disponibilidad.
 - Notificación final al estudiante.
 
 **Propósito:** Representar gráficamente el flujo de trabajo lógico de la funcionalidad más importante de la app.
@@ -51,7 +51,7 @@ El diagrama de clases presenta las **entidades principales** del sistema, sus at
 
 **Clases importantes:**
 - `Usuario`: clase base para estudiantes, personal y administradores.
-- `FichoDigital`: contiene la lógica de generación y validación del ficho QR/NFC.
+- `FichoDigital`: contiene la lógica de generación y validación del ficho QR o NFC.
 - `Comedor`: administra capacidad y horarios.
 - `RegistroAcceso`: almacena los accesos aprobados o denegados.
 
@@ -68,7 +68,7 @@ Este diagrama representa cómo fluye la información entre los diferentes compon
 **Pasos clave:**
 1. El estudiante se autentica.
 2. Se verifica la disponibilidad de cupos.
-3. Si hay cupos, se genera un ficho y se le entrega un código QR/NFC.
+3. Si hay cupos, se genera un ficho y se le entrega un código QR o NFC.
 4. En caso contrario, se le notifica que no hay cupos disponibles.
 
 **Propósito:** Entender la **interacción temporal** entre los actores y el sistema, paso a paso.
